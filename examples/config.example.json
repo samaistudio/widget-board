@@ -1,0 +1,60 @@
+{
+  "name": "",
+  "language": "en",
+  "city": { "name": "London", "lat": 51.5074, "lon": -0.1278, "timezone": "Europe/London" },
+  "cards": {
+    "daily_runs": true, "up_next": true, "due": true, "exams": true, "coursework": true, "study": true,
+    "gym": true, "quick_capture": true, "suggested_work": true, "top_performers": true, "life_plan": true,
+    "new_for_you": true, "focus": true, "news": true, "weather": true, "facts": true, "quote": true,
+    "protocol": true, "display": true, "system": true
+  },
+  "shortcuts": {
+    "Gmail": "https://mail.google.com",
+    "Calendar": "https://calendar.google.com",
+    "Claude": "shell:AppsFolder\\Claude_pzs8sxrjxfjjc!Claude",
+    "Downloads": "%USERPROFILE%\\Downloads",
+    "Study": "%USERPROFILE%\\Documents\\Courses"
+  },
+  "app_folders": {
+    "Work": ["Calendar", "Study", "Downloads"],
+    "Messages": ["Gmail"],
+    "Claude": ["Claude"]
+  },
+  "study": {
+    "root": "%USERPROFILE%\\Documents\\Courses",
+    "modules": [
+      { "name": "Linear Algebra", "short": "LA", "dir": "Linear Algebra", "slides": "slides" }
+    ]
+  },
+  "courses": [
+    { "name": "Linear Algebra", "short": "LA", "folder": "%USERPROFILE%\\Documents\\Courses\\Linear Algebra",
+      "facts": "Lecture Mon 10:00. Weekly assignment, due Friday 12:00 as one PDF. Exam 28 Jul, 09:00." }
+  ],
+  "term": { "start": "2027-04-12", "end": "2027-07-23", "breaks": [] },
+  "exams_title": "Exams",
+  "news": {
+    "country": "United Kingdom", "trends24": "united-kingdom", "google_trends_geo": "GB",
+    "interests": ["AI and startups", "tech", "football"],
+    "feeds": {
+      "X": "local:trends.json",
+      "Trending": "https://trends.google.com/trending/rss?geo=GB",
+      "World": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "Tech": "https://hnrss.org/frontpage?points=150",
+      "AI": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+      "Business": "https://feeds.bbci.co.uk/news/business/rss.xml"
+    }
+  },
+  "quote": { "tradition": "Stoic philosophers and great writers", "original_language": "en", "translate_to": "en" },
+  "cohort": "second-year computer science students at a large university",
+  "coach_tone": "direct",
+  "todo_lists": ["Study", "Work", "Gym", "Personal", "Errands"],
+  "suggestion_areas": ["Study", "Career", "Health", "Admin", "Personal"],
+  "drives": ["C"],
+  "monitors": [],
+  "inbox_searches": ["newer_than:3d -category:promotions -category:social"],
+  "jobs": {
+    "facts": "06:45", "protocol": "06:50", "quote": "07:45", "coursework": "07:30",
+    "benchmark": "06:30,13:00", "trends": "08:00,12:00,16:00,20:00", "digest": "10:00"
+  },
+  "digest": { "drafts": false }
+}

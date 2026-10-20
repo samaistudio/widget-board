@@ -1,0 +1,10 @@
+{
+  "_note": "Shape of private\\life-plan.json. Titles are shown on screen: keep them neutral.",
+  "areas": [
+    { "name": "<area, e.g. Health>", "items": [
+      { "id": "<short id>", "title": "<what to do>", "kind": "once|daily|weekly", "due": "<YYYY-MM-DD or empty>", "note": "<short hint or empty>" } ] }
+  ],
+  "top": [ { "n": 1, "title": "<one of the six that matter most>", "items": ["<item id>", "<item id>"] } ],
+  "key_dates": [ { "title": "<event>", "date": "<YYYY-MM-DD>" } ],
+  "principles": [ "<short principle>" ]
+}
