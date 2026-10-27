@@ -1,6 +1,6 @@
 # Widget Board for Windows, iPhone and Android, set up and run by Claude
 
-<p align="center"><a href="https://github.com/samzeidi/widget-board/raw/main/media/widget-board-explainer.mp4"><img src="media/video-poster.png" width="820" alt="Play the 26-second video"></a><br/><strong><a href="https://github.com/samzeidi/widget-board/raw/main/media/widget-board-explainer.mp4">▶ Watch the 26-second video</a></strong></p>
+https://github.com/user-attachments/assets/b5bea6b9-0623-4074-8e4b-e48ea040ee3c
 
 A widget board tailored to your life. On Windows, a small pill sits at the top of your screen; click it (or drag it down)
 and a board of cards slides out. On your phone, the same day lives on the lock screen and in an app. It shows what is next today, your deadlines and exams, a gym plan with a coach, your inbox,
