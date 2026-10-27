@@ -10,6 +10,8 @@ are filled by Claude (Claude Code) in the background, and you can change anythin
 <p align="center"><img src="screenshots/phone-lockscreen.png" width="380" alt="The phone lock screen: a countdown to the next class above the clock, your courses with test and exam countdowns on the left, class, gym and weather on the right"></p>
 <p align="center"><em>The same day on your lock screen: countdown above the clock, courses and exams on the left, class, gym and weather on the right.</em></p>
 
+**[Watch the 26-second video](media/widget-board-explainer.mp4)**: the board, the lock screen and home screen widgets, and how Claude sets it up.
+
 *All screenshots use the built-in demo data (a fictional student, "Alex").*
 
 ## On your phone
