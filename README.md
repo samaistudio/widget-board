@@ -1,5 +1,7 @@
 # Widget Board for Windows, iPhone and Android, set up and run by Claude
 
+<p align="center"><a href="https://github.com/samzeidi/widget-board/raw/main/media/widget-board-explainer.mp4"><img src="media/video-poster.png" width="820" alt="Play the 26-second video"></a><br/><strong><a href="https://github.com/samzeidi/widget-board/raw/main/media/widget-board-explainer.mp4">▶ Watch the 26-second video</a></strong></p>
+
 A widget board tailored to your life. On Windows, a small pill sits at the top of your screen; click it (or drag it down)
 and a board of cards slides out. On your phone, the same day lives on the lock screen and in an app. It shows what is next today, your deadlines and exams, a gym plan with a coach, your inbox,
 a progress tracker against the top 10% of your peers, news and trends, the weather, a focus timer and more. Many cards
@@ -9,8 +11,6 @@ are filled by Claude (Claude Code) in the background, and you can change anythin
 
 <p align="center"><img src="screenshots/phone-lockscreen.png" width="380" alt="The phone lock screen: a countdown to the next class above the clock, your courses with test and exam countdowns on the left, class, gym and weather on the right"></p>
 <p align="center"><em>The same day on your lock screen: countdown above the clock, courses and exams on the left, class, gym and weather on the right.</em></p>
-
-**[Watch the 26-second video](media/widget-board-explainer.mp4)**: the board, the lock screen and home screen widgets, and how Claude sets it up.
 
 *All screenshots use the built-in demo data (a fictional student, "Alex").*
 
