@@ -41,6 +41,7 @@ is not a student, no Display card on a laptop without external monitors). Keep i
 | Daily protocol | One science-based health habit fitted to their day, with tap-to-tick checks | the protocol job |
 | Display | Brightness and contrast per monitor, night light, Day / Evening / Night presets | Twinkle Tray (external monitors) or a laptop screen |
 | System | Free space per drive, RAM, CPU, antivirus status, background job status with "Run now" | nothing |
+| Phone (iPhone or Android) | Lock screen widgets (iPhone), home screen widgets, and the app: Today, Gym with body map, Tasks, Week, Chat, Due, Exams. Works with the PC off | a free GitHub account and a private data repo; Scriptable (iPhone) or Chrome (Android); chat in the cloud needs `claude setup-token` |
 
 
 ## Step 2. A short interview (only for the features they kept)
@@ -55,6 +56,10 @@ Ask in 2 to 4 grouped messages, never one question at a time. Offer sensible def
 - Gym: goal (strength, muscle, fat loss, fitness), days per week, gym or home, equipment, experience, injuries, time per session.
 - Quote style, news interests and country, coach tone (friendly, direct, tough love), cohort to compare with.
 - Which apps and sites they open most (for the app folders in the header).
+- Phone (only if they kept it): **iPhone or Android, and which model** (for example "iPhone 15 Pro Max", "Pixel 9").
+  For an iPhone, match the model to a name in `phone\devices.json` (it sizes the lock screen widgets); if it is not
+  listed, leave `phone.model` empty and tell them the widgets size themselves from the screen width. Ask whether the chat
+  should work while the PC is off (needs `claude setup-token` and a GitHub secret).
 
 ## Step 3. Generate their files
 All of these live in the repo folder and are git-ignored. Use the shapes in `examples\` (copy, then fill in). Validate every
@@ -91,6 +96,24 @@ how to enable them; never ask for passwords or tokens. The board's mail features
    Some antivirus programs flag hidden PowerShell windows; if the board does not start, add an exception for the folder.
 4. Start it: `powershell -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -STA -File Board.ps1 -Show`.
 5. Run each enabled job once ("Run now" in the System card) so every card has data today.
+
+## Step 5b. The phone part (only if they kept it)
+Follow IPHONE-SETUP.md or ANDROID-SETUP.md. Do the PC side yourself; guide the user through the phone side.
+1. They need a PRIVATE repo on github.com (for example `board-data`). Create it with `gh repo create board-data --private`
+   if the GitHub CLI is signed in, or ask them to create it. Never make it public.
+2. Clone it to `%USERPROFILE%\board-data`, copy `phone\cloud-answer.mjs` to `phone\cloud-answer.mjs` and
+   `phone\workflow-phone.yml` to `.github\workflows\phone.yml` there, set `TZ:` to their time zone, commit, push.
+   With their OK, write a short `about-me.md` there (goals, body weight for calorie estimates, coach tone).
+3. Add `"phone": { "repo_dir": "%USERPROFILE%\\board-data", "model": "<their model>", "platform": "iphone" }` (or
+   `"android"`) to `config.json`, restart the board, and after 2 to 3 minutes check that `phone.json` is in the repo.
+4. Walk them through the token: fine-grained, that repo only, Contents: Read and write. Never ask them to paste the token to
+   you or into a file; it goes straight into the phone. The same for the `claude setup-token` value: they put it into the
+   repo's Actions secret `CLAUDE_CODE_OAUTH_TOKEN` themselves.
+5. iPhone: Scriptable, a script named "Widget Board" with `phone\loader.js`, then the lock screen widgets (inline: empty
+   Parameter; left rectangle: empty; right rectangle: `day`). Android: GitHub Pages on their fork, open `/phone/android/`
+   in Chrome, Install app; KWGT + Tasker only if they want home screen widgets. Be honest that Android lock screen widgets
+   depend on their phone and Android version.
+6. Ask them to tick a task and send one chat message, and look at the repo's Actions tab together.
 
 ## Step 6. Tell the user what you did
 A short list: what is set up, what was let go, what they still have to do (enable connectors, install Twinkle Tray, pin the

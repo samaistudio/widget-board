@@ -14,3 +14,6 @@
 shot*.png
 .env
 /*.png
+# phone companion: your data lives in your private data repo, never in this one
+/phone/*.json
+!/phone/devices.json

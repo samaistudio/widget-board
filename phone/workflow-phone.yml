@@ -1,0 +1,35 @@
+# Copy this file into YOUR private data repo as .github/workflows/phone.yml (see IPHONE-SETUP.md or ANDROID-SETUP.md).
+# Whenever the phone pushes a note into ask/, it runs phone/cloud-answer.mjs: taps are applied at once (no Claude
+# usage), chat messages are answered by Claude through your own subscription (secret CLAUDE_CODE_OAUTH_TOKEN, made
+# with `claude setup-token`), and the result is pushed back for the phone and the PC.
+name: phone
+on:
+  push:
+    branches: [main]
+    paths: ["ask/**"]
+  workflow_dispatch:
+concurrency:
+  group: phone
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  answer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Europe/London   # your time zone, the same as "city.timezone" in the board's config.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @anthropic-ai/claude-code
+      - run: |
+          git config user.name "widget-board"
+          git config user.email "widget-board@users.noreply.github.com"
+      - run: node phone/cloud-answer.mjs
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

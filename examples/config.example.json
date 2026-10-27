@@ -56,5 +56,6 @@
     "facts": "06:45", "protocol": "06:50", "quote": "07:45", "coursework": "07:30",
     "benchmark": "06:30,13:00", "trends": "08:00,12:00,16:00,20:00", "digest": "10:00"
   },
-  "digest": { "drafts": false }
+  "digest": { "drafts": false },
+  "phone": { "repo_dir": "", "model": "", "platform": "iphone" }
 }

@@ -1,13 +1,33 @@
-# Widget Board
+# Widget Board for Windows, iPhone and Android, set up and run by Claude
 
-A widget board for Windows: a small pill sits at the top of your screen; click it (or drag it down) and a
-board of cards slides out. It shows what is next today, your deadlines and exams, a gym plan with a coach, your inbox,
+A widget board tailored to your life. On Windows, a small pill sits at the top of your screen; click it (or drag it down)
+and a board of cards slides out. On your phone, the same day lives on the lock screen and in an app. It shows what is next today, your deadlines and exams, a gym plan with a coach, your inbox,
 a progress tracker against the top 10% of your peers, news and trends, the weather, a focus timer and more. Many cards
 are filled by Claude (Claude Code) in the background, and you can change anything just by telling Claude.
 
 ![The board (landscape screen)](screenshots/board-hero.png)
 
+<p align="center"><img src="screenshots/phone-lockscreen.png" width="380" alt="The phone lock screen: a countdown to the next class above the clock, your courses with test and exam countdowns on the left, class, gym and weather on the right"></p>
+<p align="center"><em>The same day on your lock screen: countdown above the clock, courses and exams on the left, class, gym and weather on the right.</em></p>
+
 *All screenshots use the built-in demo data (a fictional student, "Alex").*
+
+## On your phone
+
+| iPhone lock screen | The app: Gym | The app: Week |
+|---|---|---|
+| ![Lock screen](screenshots/phone-lockscreen.png) | ![Gym](screenshots/phone-app-gym.png) | ![Week](screenshots/phone-app-week.png) |
+
+- **iPhone** (free app [Scriptable](https://scriptable.app)): a countdown line above the clock, a left widget with your
+  courses (tasks ticked this week, days to the next test and to the exam, a countdown ring) and a right widget that changes
+  with the time of day (next class or free time, today's gym day and exercises, the weather), sized for your iPhone model.
+  See [IPHONE-SETUP.md](IPHONE-SETUP.md).
+- **Android**: the same app as an installable web app, plus optional home screen widgets through KWGT and Tasker. Lock
+  screen widgets depend on your phone and Android version. See [ANDROID-SETUP.md](ANDROID-SETUP.md).
+- **The app** (both): Today, Gym with a tappable body map (each muscle colored by days since you trained it), Tasks, Week
+  (Done / Later tonight / Tomorrow / Ignore / I don't know on every task), Chat with Claude, Messages, Due and Exams.
+- **Your data stays private**: the phone reads it from a second, *private* GitHub repo of yours. Taps work while the PC is
+  off and use no Claude; chat messages are answered by Claude in GitHub Actions on your own subscription.
 
 ## Install: give this link to Claude
 
@@ -19,12 +39,13 @@ Follow SETUP-WITH-CLAUDE.md in the repo.
 ```
 
 Claude will:
-1. Clone the board and show you the demo.
+1. Clone the board and show you the demo, and ask whether you have an iPhone or an Android phone (and which model).
 2. Give you a list of every feature with its recommendation: what to set up for you and what to leave out.
 3. Ask a few short questions (what you do, your city, timetable, exams, your gym goal and equipment, what news you like).
 4. Write your own files: settings, timetable, deadlines, a gym plan made for you, a life plan, a study folder if you want one.
 5. Turn on the background jobs you picked (facts, quote of the day, trends, daily inbox digest, coursework plan, ideal day).
 6. Start the board at sign-in (Ctrl+Alt+W opens and closes it) and check that it works.
+7. If you want the phone part: create your private data repo with you and walk you through the steps on the phone.
 
 Want to look first? `powershell -ExecutionPolicy Bypass -STA -File Board.ps1 -Demo -Show` opens it with the sample data.
 
@@ -75,7 +96,8 @@ Want to look first? `powershell -ExecutionPolicy Bypass -STA -File Board.ps1 -De
 ## Privacy
 
 Everything personal stays on your PC: your settings, profile, timetable, gym log, chats and every file the jobs write are
-listed in `.gitignore`. The mail features are read-only (optional reply drafts are off by default; nothing is ever sent).
+listed in `.gitignore`. The phone part copies what the phone needs into a separate *private* repository that only you can
+read; the token for it stays on your phone. The mail features are read-only (optional reply drafts are off by default; nothing is ever sent).
 The board calls Claude through your own Claude Code CLI; there are no API keys in this repo.
 
 ## Files

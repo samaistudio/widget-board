@@ -1815,6 +1815,8 @@ function Get-Coursework([datetime]$ws) {
                      Items = @($adm | ForEach-Object { @{ Id = 'ai-' + [string]$_.id; Label = [string]$_.label; Note = [string]$_.note; Once = $true } }) }
         }
     }
+    # tasks ignored or put off on the phone stay hidden here too (phone companion only)
+    try { $hid = Phone-Hidden; if ($hid.Count) { $wk1 = $ws.ToString('yyyy-MM-dd'); foreach ($grp in $g) { $grp.Items = @($grp.Items | Where-Object { -not $hid[$(if ($_.Once -or $grp.Once) { 'once' } else { $wk1 }) + '::' + $_.Id] }) }; $g = @($g | Where-Object { @($_.Items).Count }) } } catch { }
     $res.Groups = $g
     return $res
 }
@@ -4889,6 +4891,7 @@ function Poll-Inbox {
         try {
             $o = Get-Content $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
             if ($o.source) { $src = [string]$o.source }
+            if ([string]$o.gym_session -eq 'delete') { try { Gym-Undo; $t0 = Today-Key; $keep = @($script:GymLog | Where-Object { [string]$_.date -ne $t0 }); if ($keep.Count -ne $script:GymLog.Count) { $script:GymLog.Clear(); foreach ($x in $keep) { [void]$script:GymLog.Add($x) }; Save-GymLog } } catch { } }
             $a = $(if ($o.actions) { $o.actions } else { $o })
             [void](Apply-Actions $a $src)
         } catch { }
@@ -4901,6 +4904,132 @@ function Reload-Data {
     Refresh-Linked
     try { $script:Deadlines = Get-Deadlines } catch { }   # deadlines.json may have changed
     foreach ($f in 'Render-Protocol', 'Render-DailyProtocol', 'Update-Quote', 'Update-Exams', 'Update-Deadlines', 'Update-Island') { try { & $f } catch { } }
+}
+
+# ---------------------------------------------------------------- phone (optional): iPhone or Android companion
+# Off unless config.json has "phone": { "repo_dir": "<local clone of YOUR private data repo>", "model": "iPhone 15 Pro Max" }.
+# The board writes phone.json (and copies digest, coursework and gym log) into that folder and syncs it with git every
+# 2 minutes. The phone reads those files through the GitHub API; taps and chats come back as notes in inbox\ of that repo,
+# which the board moves into its own inbox\ and applies like any other note. See IPHONE-SETUP.md / ANDROID-SETUP.md.
+$PhoneDir = Expand ([string](Cfg 'phone.repo_dir' ''))
+if ($PhoneDir -and -not (Test-Path (Join-Path $PhoneDir '.git'))) { $PhoneDir = '' }
+$script:PhoneLast = ''; $script:PhoneSyncJob = $null
+$MuscleNames = [ordered]@{ chest = 'Chest'; front_delts = 'Front delts'; side_delts = 'Side delts'; rear_delts = 'Rear delts'; biceps = 'Biceps'; triceps = 'Triceps'
+    forearms = 'Forearms'; abs = 'Abs'; traps = 'Traps'; lats = 'Lats'; upper_back = 'Upper back'; lower_back = 'Lower back'; glutes = 'Glutes'
+    quads = 'Quads'; hamstrings = 'Hamstrings'; calves = 'Calves' }
+# words in an exercise's name or target -> muscle keys (the plan has no muscle field, so this is a best guess)
+function Muscle-Keys([string]$t) {
+    $t = $t.ToLower(); $k = @()
+    $map = [ordered]@{ 'chest|bench|push-up|pec|fly' = 'chest'; 'overhead|shoulder|front delt|military' = 'front_delts'; 'lateral|side delt' = 'side_delts'
+        'rear delt|face pull|reverse fly|reversed' = 'rear_delts'; 'bicep|curl' = 'biceps'; 'tricep|dip|pushdown|skull' = 'triceps'; 'forearm|wrist|grip' = 'forearms'
+        'core|abs|plank|crunch|sit-up' = 'abs'; 'trap|shrug' = 'traps'; 'lat |lats|pull-up|pulldown|chin' = 'lats'; 'row|mid back|upper back|back' = 'upper_back'
+        'deadlift|lower back|extension|good morning' = 'lower_back'; 'glute|hip thrust|bridge' = 'glutes'; 'squat|leg press|quad|lunge|leg extension|legs' = 'quads'
+        'hamstring|leg curl|romanian|rdl' = 'hamstrings'; 'calf|calves' = 'calves' }
+    foreach ($p in $map.Keys) { if ($t -match $p -and $k -notcontains $map[$p]) { $k += $map[$p] } }
+    return $k
+}
+function Phone-Read([string]$name) { $f = Join-Path $PhoneDir $name; if ($PhoneDir -and (Test-Path $f)) { try { return (Get-Content $f -Raw -Encoding UTF8 | ConvertFrom-Json) } catch { } }; return $null }
+function Phone-Hidden {
+    # tasks ignored or put off on the phone: ref -> hidden until
+    $h = @{}; $o = Phone-Read 'hidden-tasks.json'
+    if ($o -and $o.items) { foreach ($p in $o.items.PSObject.Properties) { try { if ([datetime]$p.Value -gt (Get-Date)) { $h[$p.Name] = $true } } catch { } } }
+    return $h
+}
+function Export-Phone {
+    if (-not $PhoneDir) { return }
+    try {
+        $now = Get-Date; $iso = 'yyyy-MM-ddTHH:mm'; $today = $now.ToString('yyyy-MM-dd')
+        $sch = @($script:Schedule | Where-Object { $_.End -gt $now -and $_.Start -lt $now.AddDays(180) } | Select-Object -First 500 | ForEach-Object { [ordered]@{ start = $_.Start.ToString($iso); end = $_.End.ToString($iso); title = [string]$_.Title; kind = [string]$_.Kind; room = [string]$_.Room } })
+        $dl = @($script:Deadlines | Where-Object { $_.When -gt $now } | Select-Object -First 80 | ForEach-Object { [ordered]@{ when = $_.When.ToString($iso); what = [string]$_.What; note = [string]$_.Note } })
+        $exs = @($Exams | Where-Object { $_.End -gt $now } | ForEach-Object { [ordered]@{ name = [string]$_.Name; sub = [string]$_.Sub; start = $_.Start.ToString($iso); room = [string]$_.Room; notime = [bool]$_.NoTime } })
+        # muscles: from the gym log (which plan day was done when) and the exercises of that day
+        $days = @($script:GymPlan.days | Where-Object { $_ })
+        $hist = @{}; foreach ($k in $MuscleNames.Keys) { $hist[$k] = @() }
+        foreach ($e in @($script:GymLog)) {
+            try { $d0 = [datetime]$e.date } catch { continue }
+            $pd = $days | Where-Object { [string]$_.title -eq [string]$e.day } | Select-Object -First 1; if (-not $pd) { continue }
+            foreach ($x in @($pd.exercises)) { $n = 0; [void][int]::TryParse(([string]$x.sets -replace '\D.*$', ''), [ref]$n)
+                foreach ($k in @(Muscle-Keys ([string]$x.target + ' ' + [string]$x.name))) { $hist[$k] += [pscustomobject]@{ Date = $d0; Sets = $n; Detail = [string]$x.name } } }
+        }
+        $mus = @($MuscleNames.Keys | ForEach-Object { $h0 = @($hist[$_] | Sort-Object Date -Descending); $last = $(if ($h0.Count) { $h0[0].Date } else { $null })
+            [ordered]@{ key = $_; name = $MuscleNames[$_]; last = $(if ($last) { $last.ToString('yyyy-MM-dd') } else { '' }); days = $(if ($last) { [int]($now.Date - $last.Date).TotalDays } else { 999 })
+                sets7 = [int](($h0 | Where-Object { ($now.Date - $_.Date).TotalDays -lt 7 } | Measure-Object Sets -Sum).Sum)
+                recent = @($h0 | Select-Object -First 3 | ForEach-Object { $_.Date.ToString('yyyy-MM-dd') + ': ' + $_.Detail + $(if ($_.Sets) { ' (' + $_.Sets + ' sets)' } else { '' }) }) } })
+        $gd = $null; try { $gd = $days[$script:GymSt.Idx] } catch { }
+        $sess = Phone-Read 'gym-session.json'; if (-not $sess -or [string]$sess.date -ne $today) { $sess = [ordered]@{ date = $today; started = ''; ended = ''; entries = @() } }
+        $todo = @($script:Todos | Where-Object { -not $_.Done } | Select-Object -First 25 | ForEach-Object { [ordered]@{ id = [string]$_.Id; title = [string]$_.Title; start = [string]$_.Start; list = [string]$_.List; kind = [string]$_.Kind } })
+        $ws = Week-Start $now; $wk = $ws.ToString('yyyy-MM-dd'); $cw = @(); $hid = Phone-Hidden
+        try { foreach ($g in (Get-Coursework $ws).Groups) {
+            $items = @(foreach ($it in $g.Items) { $rk = $(if ($it.Once -or $g.Once) { 'once' } else { $wk }); $ref = $rk + '::' + $it.Id; if ($hid[$ref]) { continue }
+                [ordered]@{ ref = $ref; label = [string]$it.Label; note = [string]$it.Note; done = [bool]($script:Checks[$rk] -and $script:Checks[$rk][$it.Id]); due = $(if ($it.DueAt) { ([datetime]$it.DueAt).ToString($iso) } else { '' }) } })
+            $cw += [ordered]@{ course = [string]$g.Course; abbr = $(if ($g.Short) { [string]$g.Short } else { (Course-Short ([string]$g.Course)) }); once = [bool]$g.Once; focus = [string]$g.Focus; items = $items } } } catch { }
+        # the phone model decides the size of the lock screen widgets (phone\devices.json)
+        $model = [string](Cfg 'phone.model' ''); $lock = $null
+        try { $dv = Get-Content (Join-Path $Here 'phone\devices.json') -Raw -Encoding UTF8 | ConvertFrom-Json; $lock = @($dv.models | Where-Object { $_.name -eq $model }) | Select-Object -First 1 } catch { }
+        # three ready-made lines for Android home screen widgets (KWGT via Tasker), see ANDROID-SETUP.md
+        $cd = { param($t) $mn = [int][math]::Max(0, ($t - $now).TotalMinutes); if ($mn -lt 60) { "in $($mn)m" } elseif ($mn -lt 1440) { 'in ' + [math]::Floor($mn / 60) + 'h' } else { 'in ' + [math]::Floor($mn / 1440) + 'd' } }
+        $gl = [ordered]@{ top = ''; exam = ''; gym = '' }
+        $nx = @($script:Schedule | Where-Object { $_.End -gt $now }) | Select-Object -First 1
+        if ($nx) {
+            $cur = $nx.Start -le $now
+            $dayc = @($script:Schedule | Where-Object { $_.Start.Date -eq $nx.Start.Date -and $_.Start -gt $now })
+            $hrs = ($dayc | ForEach-Object { if ($_.Start.Minute) { $_.Start.ToString('H:mm') } else { [string]$_.Start.Hour } }) -join ','
+            $gl.top = [string]$nx.Title + ' ' + $(if ($cur) { 'ends ' + (& $cd $nx.End) } else { & $cd $nx.Start }) + $(if ($dayc.Count -gt 1) { ' · ' + $dayc.Count + [char]0xD7 + ' ' + $hrs } else { '' })
+        }
+        $ne = @($Exams | Where-Object { $_.Start -gt $now }) | Select-Object -First 1
+        if ($ne) { $gl.exam = (([string]$ne.Name + ' ' + [string]$ne.Sub).Trim()) + ' ' + (& $cd $ne.Start) }
+        if ($gd) { $gl.gym = $(if ($script:GymSt.DoneDate -eq $today) { 'Gym done today' } else { 'Gym: ' + ([string]$gd.title -replace '^Day \d+:\s*', '') }) }
+        $o = [ordered]@{ schedule = $sch; deadlines = $dl; exams = $exs; muscles = $mus; glance = $gl
+            gym = [ordered]@{ next = [string]$gd.title; focus = [string]$gd.focus; done_today = ($script:GymSt.DoneDate -eq $today); exercises = @(@($gd.exercises) | Where-Object { $_ } | ForEach-Object { [ordered]@{ name = [string]$_.name; sets = [string]$_.sets } }); session = $sess
+                plan = @($days | ForEach-Object { [ordered]@{ title = [string]$_.title; exercises = @(@($_.exercises) | Where-Object { $_ } | ForEach-Object { [ordered]@{ name = [string]$_.name; sets = [string]$_.sets; muscles = @(Muscle-Keys ([string]$_.target + ' ' + [string]$_.name)) } }) } }) }
+            todos = $todo; coursework = $cw
+            meta = [ordered]@{ city = [string](Cfg 'city.name' ''); lat = (Cfg 'city.lat' $null); lon = (Cfg 'city.lon' $null); timezone = $TimeZone; term_start = [string](Cfg 'term.start' '')
+                model = $model; lock = $(if ($lock) { [ordered]@{ w = [int]$lock.rect_w; h = [int]$lock.rect_h } } else { $null }) } }
+        $body = $o | ConvertTo-Json -Depth 8 -Compress
+        if ($body -ne $script:PhoneLast) {
+            $script:PhoneLast = $body; $o.generated = $now.ToString('s')
+            [IO.File]::WriteAllText((Join-Path $PhoneDir 'phone.json'), ($o | ConvertTo-Json -Depth 8 -Compress), (New-Object Text.UTF8Encoding $false))
+        }
+        # the phone also reads these (inbox digest, the weekly plan, the gym history)
+        foreach ($n in 'digest.json', 'digest-done.json', 'coursework.json', 'gym-log.json') {
+            $src = Join-Path $Data $n; $dst = Join-Path $PhoneDir $n
+            if ((Test-Path $src) -and (-not (Test-Path $dst) -or (Get-Content $src -Raw) -ne (Get-Content $dst -Raw))) { Copy-Item $src $dst -Force }
+        }
+    } catch { }
+}
+function Course-Short([string]$name) {
+    $c = @((Cfg 'courses' @())) + @((Cfg 'study.modules' @())) | Where-Object { $_ -and [string]$_.name -eq $name } | Select-Object -First 1
+    if ($c -and $c.short) { return [string]$c.short }
+    return (($name -split '\s+' | Where-Object { $_ } | ForEach-Object { $_.Substring(0, 1) }) -join '').ToUpper()
+}
+# git in the background: commit what the board wrote, pull what the phone and the cloud job wrote, push
+function Start-PhoneSync {
+    if (-not $PhoneDir -or $script:PhoneSyncJob) { return }
+    $script:PhoneSyncJob = Start-Job -ArgumentList $PhoneDir, $InboxDir -ScriptBlock {
+        param($dir, $inbox)
+        $moved = @()
+        & git -C $dir add -A 2>$null | Out-Null
+        if (& git -C $dir status --porcelain 2>$null) { & git -C $dir commit -q -m 'board: update from the PC' 2>$null | Out-Null }
+        & git -C $dir pull -q --rebase -X theirs --autostash 2>$null | Out-Null
+        & git -C $dir push -q 2>$null | Out-Null
+        # notes for this PC (taps and chats from the phone, forwarded by the cloud job)
+        $ib = Join-Path $dir 'inbox'
+        if (Test-Path $ib) {
+            foreach ($f in @(Get-ChildItem $ib -Filter '*.json' -File -ErrorAction SilentlyContinue)) {
+                if (-not (Test-Path $inbox)) { New-Item -ItemType Directory $inbox -Force | Out-Null }
+                Move-Item $f.FullName (Join-Path $inbox ('phone-' + $f.Name)) -Force; $moved += $f.Name
+            }
+        }
+        $moved
+    }
+}
+function Poll-PhoneSync {
+    $j = $script:PhoneSyncJob
+    if (-not $j -or $j.State -eq 'Running') { return }
+    try { [void](Receive-Job $j -ErrorAction SilentlyContinue) } catch { }
+    try { Remove-Job $j -Force } catch { }
+    $script:PhoneSyncJob = $null
+    Export-Phone
 }
 
 # ---------------------------------------------------------------- timers + run
@@ -4920,6 +5049,7 @@ $poll.Add_Tick({
     if ($script:ScoreJob) { Poll-NewsScoring }
     if ($script:LifeJob) { Poll-LifeToday }
     if ($script:LifeUpdJob) { Poll-LifeUpdate }
+    if ($script:PhoneSyncJob) { Poll-PhoneSync }
 })
 $poll.Start()
 
@@ -4936,6 +5066,7 @@ $timer.Add_Tick({
     # a data file changed on disk: reload it a few seconds later
     if ($script:TickN % 10 -eq 3) { $ds = Data-Stamp; if ($ds -ne $script:DataStamp) { $script:DataStamp = $ds; $script:ReloadAt = (Get-Date).AddSeconds(3) } }
     if ($script:TickN % 2 -eq 0) { Poll-Inbox }
+    if ($PhoneDir -and $script:TickN % 120 -eq 40) { Export-Phone; Start-PhoneSync }   # the phone companion, when it is set up
     if ($script:TickN % 300 -eq 150 -and (Get-Date).Hour -ge 7 -and (-not $script:LifeUpd -or [string]$script:LifeUpd.date -ne (Get-Date).ToString('yyyy-MM-dd'))) { Start-LifeUpdate }   # once each morning
     # a data file changed on disk (Claude Code, another machine, a cloud routine): re-read it and refresh every card, never mid-typing
     if ($script:ReloadAt -and (Get-Date) -ge $script:ReloadAt -and -not $script:ParseJobs.Count -and -not ([Windows.Input.Keyboard]::FocusedElement -is [Windows.Controls.TextBox])) { $script:ReloadAt = $null; Reload-Data }

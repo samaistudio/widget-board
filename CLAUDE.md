@@ -69,7 +69,19 @@ Everything is in `Board.ps1` (Windows PowerShell 5.1 + WPF, one file).
   action layer every chat uses), `Profile-Context` (what every AI prompt knows about the user), "final card order" (layout),
   `Pick-Screen` (which monitor).
 
-## 4. Privacy
+## 4. The phone (iPhone or Android), if set up
+- `config.json` -> `phone.repo_dir` is a local clone of the user's PRIVATE data repo. The board writes `phone.json` there
+  (plus copies of `digest.json`, `digest-done.json`, `coursework.json`, `gym-log.json`) and syncs it with git every 2 minutes.
+- The phone writes notes into `ask/` of that repo. GitHub Actions (`.github/workflows/phone.yml` running `phone/cloud-answer.mjs`)
+  applies them and forwards them to `inbox/` of that repo; the board moves them into its own inbox folder and applies them.
+- Code: `phone/widget.js` (the app and the iPhone widgets; run by Scriptable through `phone/loader.js`, and on Android by
+  `phone/android/shim.js`), `phone/devices.json` (lock screen widget sizes per iPhone model), `phone/cloud-answer.mjs`.
+  Check a change with `node --check`. Phones load `phone/widget.js` from GitHub, so a pushed change reaches them on their next run.
+- Lock screen widgets: inline (empty Parameter), left rectangle (empty), right rectangle (Parameter `day`).
+
+## 5. Privacy
 - Everything the user tells the board stays in this folder and in `%LOCALAPPDATA%\WidgetBoard`. `.gitignore` keeps all data
   files out of git. Never commit `config.json`, `profile.md`, `private\` or any data JSON to a public repo.
 - Never put API keys or passwords in any file. Mail features are read-only; nothing is ever sent.
+- The phone token and the `claude setup-token` value never go into a file, a chat or the public repo: the user puts them
+  into the phone and into the data repo's Actions secret themselves. The data repo must stay private.
