@@ -36,7 +36,7 @@ are filled by Claude (Claude Code) in the background, and you can change anythin
 You need Windows 10 or 11 and [Claude Code](https://claude.com/claude-code) signed in. Open Claude Code in any folder and paste:
 
 ```
-Set up this widget board for me: https://github.com/samzeidi/widget-board
+Set up this widget board for me: https://github.com/samaistudio/widget-board
 Follow SETUP-WITH-CLAUDE.md in the repo.
 ```
 

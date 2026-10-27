@@ -2,7 +2,7 @@
 // It runs the newest phone/widget.js from GitHub, so updates arrive on their own, and keeps the last good copy for when
 // there is no connection. Your data repo and token stay in this phone's Keychain. See IPHONE-SETUP.md.
 // CODE: where the app code comes from. Leave it, or point it at your own fork ("you/widget-board").
-const CODE = "samzeidi/widget-board", LKEY = "board_token", LREPO = "board_repo"
+const CODE = "samaistudio/widget-board", LKEY = "board_token", LREPO = "board_repo"
 const lfm = FileManager.local(), ldir = lfm.joinPath(lfm.documentsDirectory(), "widget-board"), lfile = lfm.joinPath(ldir, "widget.js")
 if (!lfm.fileExists(ldir)) lfm.createDirectory(ldir)
 // first run: your private data repo ("you/board-data") and a fine-grained token for it

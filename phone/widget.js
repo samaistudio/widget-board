@@ -6,7 +6,7 @@
 const KEY = "board_token", REPO_KEY = "board_repo"
 let REPO = Keychain.contains(REPO_KEY) ? Keychain.get(REPO_KEY) : ""
 // the public code repo: the body map artwork is read from here (no token needed)
-const CODE = "samzeidi/widget-board"
+const CODE = "samaistudio/widget-board"
 const BOARD_URL = ""   // empty = tapping a widget opens this script's app view
 const fm = FileManager.local()
 const cacheDir = fm.joinPath(fm.documentsDirectory(), "widget-board")
