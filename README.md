@@ -1,6 +1,6 @@
 # Widget Board for Windows, iPhone and Android, set up and run by your AI
 
-<p align="center"><a href="media/widget-board-explainer.mp4"><img src="media/video-poster.png" width="760" alt="Watch the video"></a></p>
+https://github.com/user-attachments/assets/6a82edc8-f313-45a0-b831-3f41e3532dc4
 
 A widget board tailored to your life. On Windows, a small pill sits at the top of your screen; click it (or drag it down)
 and a board of cards slides out. On your phone, the same day lives on the lock screen and in an app. It shows what is next today, your deadlines and exams, a gym plan with a coach, your inbox,
@@ -33,7 +33,7 @@ are filled by your AI in the background, and you can change anything just by tel
 
 ## Your data stays yours
 
-**Free and open source (MIT). Read every line yourself.** There is no server of ours, no account with us and no tracking. Nothing in the code sends your data to us.
+**Free and open source (MIT; the body map artwork keeps its own license, see assets/BODY-MAP-LICENSE.txt). Read every line yourself.** There is no server of ours, no account with us and no tracking. Nothing in the code sends your data to us.
 
 - Your files stay on your PC, and git ignores them.
 - The phone part uses your own private GitHub repo and your own token.
