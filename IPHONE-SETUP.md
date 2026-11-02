@@ -41,12 +41,15 @@ you through them. Below is everything in full, so you can also do it by hand or 
    "Add a README". Create it.
 2. Clone it next to the board, for example to `%USERPROFILE%\board-data`:
    `git clone https://github.com/<you>/board-data "%USERPROFILE%\board-data"`
-3. Copy two files from this repo into it:
+3. Copy three files from this repo into it:
    - `phone\cloud-answer.mjs` to `board-data\phone\cloud-answer.mjs`
+   - `phone\off.mjs` to `board-data\phone\off.mjs` (food lookups by barcode for the chat)
    - `phone\workflow-phone.yml` to `board-data\.github\workflows\phone.yml`
    In `phone.yml` set `TZ:` to your time zone (the same as `city.timezone` in your `config.json`).
 4. Optional: a short `board-data\about-me.md` (your goals, body weight for calorie estimates, coach tone). The cloud chat
    reads it. Nothing else about you is read in the cloud.
+   Also optional: `board-data\app-config.json` from `examples\app-config.example.json`: your name, courses, goals, currency,
+   meals you already paid for, wake window and targets. Without it the app uses defaults and sets no goals. See `SETUP.md`.
 5. Commit and push: `git -C "%USERPROFILE%\board-data" add -A`, `git commit -m setup`, `git push`.
 6. Tell the board about it in `config.json`:
    ```json
@@ -74,12 +77,12 @@ The phone reads and writes your data repo with a **fine-grained personal access 
 1. Install **Scriptable** from the App Store and open it once.
 2. Tap **+** for a new script. Name it **Widget Board** (tap the title at the top).
 3. Paste the whole content of [`phone/loader.js`](phone/loader.js) (open it on github.com, tap **Raw**, select all, copy).
-   It is about 40 lines; it loads the real app from this repo every time, so you never paste again.
+   It is about 45 lines; it loads the real app from this repo, so you never paste again.
 4. Tap **Done**, then tap the script to run it. It asks for:
    - your data repo as `owner/name`, for example `you/board-data`
    - the token from step 2
    Both are stored in the iPhone's Keychain, not in the script.
-5. The app opens: Today, Gym (with a tappable body map), Tasks, Week, Chat, Messages, Due, Exams. Tap things: tasks
+5. The app opens: Today, Study, Gym (with a tappable body map), Food, Stats, and under More: Money, Body, Everything logged, Game, Journal, Tasks, Week, Messages, Due, Exams. It opens at once from what is saved on the phone and fetches the rest behind the page, so new code shows on the second open. Tap things: tasks
    have Done / Later tonight / Tomorrow / Ignore / I don't know; the Gym page has a day picker and a session timer.
 
 ![The app: Today](screenshots/phone-app-today.png)
@@ -109,7 +112,7 @@ Taps already work without this step. For the chat and the gym coach in the cloud
    Name: `CLAUDE_CODE_OAUTH_TOKEN`. Value: that token. Save. Do not paste it anywhere else.
 3. Send a chat message from the phone. After about a minute the reply appears (the **Actions** tab of the repo shows each run).
 
-Each chat message is one short Claude run on your subscription. Taps never use Claude.
+Each chat message is one short Claude run on your subscription. So is a food photo, a journal read, a progress photo and a bank statement. Taps never use Claude.
 
 ## Troubleshooting
 
@@ -129,5 +132,8 @@ Each chat message is one short Claude run on your subscription. Taps never use C
 - The public repo holds only code. Your data lives in the private data repo, the board folder on your PC, and Scriptable's
   folder on the phone.
 - The token is limited to the data repo and stored in the Keychain. The cloud chat reads only the data repo
-  (`phone.json`, the gym log, `about-me.md` if you add it) and never edits files; changes come back as notes.
+  (`phone.json`, your logs, `app-config.json` and `about-me.md` if you add them) and never edits files; changes come back as actions.
+- Photos, PDFs and statements you send pass through your private data repo, so they stay in its git history. A bank CSV is read on the phone, and only dates, shops and amounts are sent.
+- Barcode lookups ask world.openfoodfacts.org for that one code; the scanner library comes from cdn.jsdelivr.net.
+- Location logging is off unless you set `"location": true` in `app-config.json`.
 - Mail features stay read-only; nothing is ever sent.

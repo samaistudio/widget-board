@@ -78,6 +78,10 @@ Everything is in `Board.ps1` (Windows PowerShell 5.1 + WPF, one file).
   `phone/android/shim.js`), `phone/devices.json` (lock screen widget sizes per iPhone model), `phone/cloud-answer.mjs`.
   Check a change with `node --check`. Phones load `phone/widget.js` from GitHub, so a pushed change reaches them on their next run.
 - Lock screen widgets: inline (empty Parameter), left rectangle (empty), right rectangle (Parameter `day`).
+- Settings: `app-config.json` in the data repo (table in `SETUP.md`, shape in `examples\app-config.example.json`). Nothing personal goes in the code: names, courses, goals, meals, currency and targets all come from there, and the app must keep working with the file missing and with no courses.
+- The phone's taps and chats log to files in the data repo, written by the cloud job and not forwarded to the PC: `food-log.json` (`food_add`, `food_remove`, `food_goal`), `study-log.json` (`study_add`, `study_remove`), `day-log.json` (`day_add`, `day_edit`, `day_remove`; kind `move` with `value` in kcal raises that day's calorie goal), `gym-phone.json` (`workout`, `gym_remove`; separate from `gym-log.json`, which the board rewrites), `money-log.json` (`money_add`, `money_remove`, `money_balance`), `quests.json` (`quest_add`, `quest_done`, `game_cfg`), `health-log.json` (`health_add`), `degree.json` (`degree_set`), `app-config.json` (`app_cfg`), `gym-session.json` (`gym_suggest`: the plan day a chat settled on, it wins over the rotation for that day). `food_ai`, `study_ai`, `journal_ai`, `body_ai` and `money_ai` notes in `ask/` call the AI and answer in `food-ai.json`, `study-ai.json`, `journal.json`, `body-log.json` and `money-log.json`.
+- Anything new `phone/widget.js` needs from Scriptable must exist in `phone/android/shim.js` or fail gracefully. Links out of the page go through `nav()`.
+- The game's rules are in `SETUP.md`: no negative points, no guilt copy, never praise eating less, never score journal content, chat confirms what was logged, screen time is not tracked.
 
 ## 5. Privacy
 - Everything the user tells the board stays in this folder and in `%LOCALAPPDATA%\WidgetBoard`. `.gitignore` keeps all data

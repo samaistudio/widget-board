@@ -13,4 +13,6 @@ Copy what you need into the repo folder (without `.example`) and fill it in. All
 - `config.json` -> `phone`: only for the phone part (IPHONE-SETUP.md, ANDROID-SETUP.md). `repo_dir` = local clone of your
   private data repo, `model` = a name from `phone\devices.json`, `platform` = `iphone` or `android`.
 
+- `app-config.example.json` -> `app-config.json` in your PRIVATE data repo (not this folder): the phone app's settings. Every key is optional; the table is in `SETUP.md`.
+
 Times are local, ISO style: `2027-05-20T14:00`.

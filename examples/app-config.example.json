@@ -1,0 +1,22 @@
+{
+  "name": "Alex",
+  "courses": [
+    { "name": "Linear Algebra", "short": "LA", "keywords": ["matrix", "matrices"] },
+    { "name": "Programming", "short": "Prog", "tree": "pine", "color": "#E08A38" },
+    "World History"
+  ],
+  "term_start": "2027-04-12",
+  "goals": { "kcal": 2300, "protein": 130 },
+  "currency": "£",
+  "currency_after": false,
+  "locale": "en-GB",
+  "meals": [
+    { "name": "Canteen lunch", "days": "weekdays", "from": "12:00", "to": "14:00", "kcal": 700, "protein": 30, "carbs": 80, "fat": 20 }
+  ],
+  "wake": { "from": "07:00", "to": "08:00" },
+  "game": { "study_hours_week": 15, "study_days": 5, "weekly": { "moneycheck": 1, "contact": 2, "making": 2, "application": 0 } },
+  "food": { "gym_free_week": 3, "gym_extra_kcal": 300, "bonus_cap": 600 },
+  "body": { "goal_kg": 0, "goal_bf": 0, "goal_bf_low": 0 },
+  "nudges": true,
+  "location": false
+}

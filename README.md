@@ -16,9 +16,17 @@ are filled by your AI in the background, and you can change anything just by tel
 
 ## On your phone
 
-| iPhone lock screen | The app: Gym | The app: Week |
+| iPhone lock screen | The app: Today | Food |
 |---|---|---|
-| ![Lock screen](screenshots/phone-lockscreen.png) | ![Gym](screenshots/phone-app-gym.png) | ![Week](screenshots/phone-app-week.png) |
+| ![Lock screen](screenshots/phone-lockscreen.png) | ![Today](screenshots/phone-app-today.png) | ![Food](screenshots/phone-app-food.png) |
+
+| Study and forest | Gym | Life game |
+|---|---|---|
+| ![Study](screenshots/phone-app-study.png) | ![Gym](screenshots/phone-app-gym.png) | ![Game](screenshots/phone-app-game.png) |
+
+| Body | Money | Journal |
+|---|---|---|
+| ![Body](screenshots/phone-app-body.png) | ![Money](screenshots/phone-app-money.png) | ![Journal](screenshots/phone-app-journal.png) |
 
 - **iPhone** (free app [Scriptable](https://scriptable.app)): a countdown line above the clock, a left widget with your
   courses (tasks ticked this week, days to the next test and to the exam, a countdown ring) and a right widget that changes
@@ -26,8 +34,7 @@ are filled by your AI in the background, and you can change anything just by tel
   See [IPHONE-SETUP.md](IPHONE-SETUP.md).
 - **Android**: the same app as an installable web app, plus optional home screen widgets through KWGT and Tasker. Lock
   screen widgets depend on your phone and Android version. See [ANDROID-SETUP.md](ANDROID-SETUP.md).
-- **The app** (both): Today, Gym with a tappable body map (each muscle colored by days since you trained it), Tasks, Week
-  (Done / Later tonight / Tomorrow / Ignore / I don't know on every task), Chat with Claude, Messages, Due and Exams.
+- **The app** (both): Today with a day line, Heads up and one chat that takes photos, the camera and barcodes; Study with a timer and a forest that grows; Gym with a tappable body map and a coach; Food (calorie ring, macros, barcode scan, photo or text estimate, exercise calories); Stats, Body (weigh-ins, your real burn, progress photos), Money (bank CSV, categories), Journal, a life game with floors, areas and quests, Everything logged, Tasks, Week, Messages, Due and Exams. Your name, courses, goals, currency and targets are settings, and the app also works with no courses and no goals.
 - **Your data stays private**: the phone reads it from a second, *private* GitHub repo of yours. Taps work while the PC is
   off and use no Claude; chat messages are answered by Claude in GitHub Actions on your own subscription.
 

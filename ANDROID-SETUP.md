@@ -1,10 +1,10 @@
 # Android setup
 
-On Android you get the same app as on iPhone (Today, Gym with the body map, Tasks, Week, Chat, Messages, Due, Exams),
+On Android you get the same app as on iPhone (Today, Study, Gym with the body map, Food, Stats, Money, Body, Journal, Game, Tasks, Week, Messages, Due, Exams),
 installed from the browser as a web app, plus optional home screen widgets. It reads the same private data repo, so it
 keeps working while the PC is off.
 
-![The app: Week](screenshots/phone-app-week.png)
+![The app: Today](screenshots/phone-app-today.png)
 
 *Screenshot with the built-in demo data (a fictional student, "Alex").*
 
@@ -20,6 +20,8 @@ asks for your phone model, and does the PC-side steps. The steps on the phone ar
 | Home screen widgets | Possible with **KWGT** (Kustom Widget Maker) fed by **Tasker**. Tasker is a paid app; KWGT is free with an optional Pro key. This route is described below but has **not** been tested on a device by us. |
 | Lock screen widgets | **Not promised.** Android removed lock screen widgets on phones years ago. Google announced their return for phones with Android 16 QPR1, reportedly through a hub shown while the phone is charging or docked, and manufacturers decide whether to ship it. Whether a KWGT widget can sit on your lock screen depends on your phone and Android version. Check: long-press the lock screen or look under Settings > Lock screen. If there is no widget option, use the home screen. |
 | Reminders | Only while the app is open (browsers cannot schedule notifications reliably). |
+| Barcode camera | Chrome asks for the camera. If it is blocked, Take photo and typing the digits still work. |
+| iPhone Shortcuts (Health numbers) | iPhone only. The Steps and Sleep charts stay hidden without them. |
 
 ## How it works
 

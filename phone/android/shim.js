@@ -4,7 +4,9 @@
 //   Request                   -> fetch
 //   WebView                   -> a full-screen iframe; links like widget://... come back through postMessage
 //   Notification              -> a web notification while the app is open (browsers cannot schedule reliably)
-// Nothing here is sent anywhere except api.github.com (your data repo) and api.open-meteo.com (weather).
+//   Location                  -> the browser's location, only if you set "location": true in app-config.json
+// Nothing here is sent anywhere except api.github.com (your data repo), api.open-meteo.com (weather), and when you scan
+// a barcode world.openfoodfacts.org (the code) and cdn.jsdelivr.net (the scanner library).
 (function () {
   const LS = window.localStorage
   const KP = "wb.kc.", FP = "wb.fs."
@@ -26,6 +28,8 @@
     readString: p => { const v = LS.getItem(FP + p); if (v === null) throw new Error("no file " + p); return v },
     writeString: (p, s) => { try { LS.setItem(FP + p, String(s)); LS.setItem(FP + p + "#t", String(Date.now())) } catch (e) { } },
     remove: p => { LS.removeItem(FP + p); LS.removeItem(FP + p + "#t") },
+    listContents: p => { const d = FP + String(p).replace(/[/]$/, "") + "/", out = []; for (let i = 0; i < LS.length; i++) { const k = LS.key(i); if (k && k.startsWith(d) && k.length > d.length && !k.endsWith("#t") && !k.slice(d.length).includes("/")) out.push(k.slice(d.length)) } return out },
+    isFileStoredIniCloud: () => false, isFileDownloaded: () => true,
     modificationDate: p => new Date(Number(LS.getItem(FP + p + "#t") || 0))
   }
 
@@ -98,16 +102,19 @@
   }
 
   class WebNotification {
-    constructor() { this.title = ""; this.body = ""; this.at = null; this.openURL = "" }
+    constructor() { this.title = ""; this.body = ""; this.at = null; this.openURL = ""; this.identifier = "" }
+    // taking back what a timer scheduled, for example when a study session stops early
+    static removePending(ids) { for (const id of ids || []) { clearTimeout(WebNotification.timers[id]); delete WebNotification.timers[id] } }
     setTriggerDate(d) { this.at = d }
     async schedule() {
       // only works while the app stays open: browsers have no reliable scheduled notifications
       const show = () => { try { if (window.Notification && window.Notification.permission === "granted") new window.Notification(this.title, { body: this.body }) } catch (e) { } }
       try { if (window.Notification && window.Notification.permission === "default") await window.Notification.requestPermission() } catch (e) { }
       const ms = this.at ? this.at - Date.now() : 0
-      if (ms < 2147483647) setTimeout(show, Math.max(0, ms))
+      if (ms < 2147483647) { const t = setTimeout(show, Math.max(0, ms)); if (this.identifier) WebNotification.timers[this.identifier] = t }
     }
   }
+  WebNotification.timers = {}
 
   // widget drawing classes: only needed so the shared code loads; the Android app never draws Scriptable widgets
   class Color { constructor(hex, a) { this.hex = hex; this.alpha = a } static white() { return new Color("#FFFFFF") } static black() { return new Color("#000000") } }
@@ -120,12 +127,14 @@
     Keychain, FileManager, Request, Data, Alert, WebView, Notification: WebNotification, Color, Font, Size, Point, Rect,
     config: { runsInApp: true, runsInWidget: false, runsInAccessoryWidget: false, widgetFamily: null },
     args: { widgetParameter: null, queryParameters: params },
-    Script: { complete() { }, setWidget() { } },
+    Script: { complete() { }, setWidget() { }, name: () => "Widget Board", setShortcutOutput() { } },
     URLScheme: { forRunningScript: () => location.origin + location.pathname },
     Timer: { schedule: (ms, repeat, fn) => { const id = repeat ? setInterval(fn, ms) : setTimeout(fn, ms); return { invalidate: () => repeat ? clearInterval(id) : clearTimeout(id) } } },
     Pasteboard: { paste: () => "" },
     Safari: { open: u => window.open(u, "_blank", "noopener") },
     Speech: { speak: t => { try { speechSynthesis.speak(new SpeechSynthesisUtterance(t)) } catch (e) { } } },
-    Device: { screenSize: () => ({ width: window.innerWidth, height: window.innerHeight }) }
+    Device: { isPad: () => false, screenSize: () => ({ width: window.innerWidth, height: window.innerHeight }) },
+    Location: { setAccuracyToHundredMeters() { }, current: () => new Promise((ok, no) => navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => ok({ latitude: p.coords.latitude, longitude: p.coords.longitude }), no, { timeout: 10000 }) : no(new Error("no location"))) },
+    Geocoder: { reverse: async () => [] }
   }
 })()

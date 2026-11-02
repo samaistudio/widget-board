@@ -28,7 +28,7 @@ Tick some, or just say "all".
 ![Tick your features](step-4-tick-features.png)
 
 ## 5. Answer a few questions
-Every feature gets made for you, including a new workout plan. You type your own passwords and keys, and never paste them into the chat.
+Every feature gets made for you, including a new workout plan and the phone app's settings (your name, courses, goals, currency). You type your own passwords and keys, and never paste them into the chat.
 
 ![Your questions](step-5-tailor.png)
 

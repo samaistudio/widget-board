@@ -18,16 +18,21 @@ if (config.runsInApp && (!Keychain.contains(LREPO) || !Keychain.contains(LKEY)))
     if (t) Keychain.set(LKEY, t)
   }
 }
-let lcode = ""
-try {
-  // the app code is public, so it needs no token; cache-buster so the lock screen never gets an old copy
-  const r = new Request(`https://raw.githubusercontent.com/${CODE}/main/phone/widget.js?t=${Date.now()}`)
-  r.headers = { "Cache-Control": "no-cache" }
-  r.timeoutInterval = config.runsInApp ? 15 : 5
-  const s = await r.loadString()
-  if (r.response?.statusCode === 200 && s.length > 1000) { lcode = s; lfm.writeString(lfile, s) }
-} catch (e) { }
-if (!lcode && lfm.fileExists(lfile)) lcode = lfm.readString(lfile)
+// opens-from-phone: the app starts at once from the saved copy and fetches the newest for the next open; widgets still check first
+const lfetch = async () => {
+  try {
+    // the app code is public, so it needs no token; cache-buster so the lock screen never gets an old copy
+    const r = new Request(`https://raw.githubusercontent.com/${CODE}/main/phone/widget.js?t=${Date.now()}`)
+    r.headers = { "Cache-Control": "no-cache" }
+    r.timeoutInterval = config.runsInApp ? 15 : 5
+    const s = await r.loadString()
+    if (r.response?.statusCode === 200 && s.length > 1000) { lfm.writeString(lfile, s); return s }
+  } catch (e) { }
+  return ""
+}
+let lcode = lfm.fileExists(lfile) ? lfm.readString(lfile) : ""
+if (config.runsInApp && lcode) lfetch()
+else lcode = await lfetch() || lcode
 try {
   if (lcode) await new (Object.getPrototypeOf(async function () { }).constructor)(lcode)()
   else if (config.runsInWidget) { const w = new ListWidget(); w.addText("Open Widget Board once to set it up"); Script.setWidget(w) }

@@ -1,6 +1,6 @@
 # Copy this file into YOUR private data repo as .github/workflows/phone.yml (see IPHONE-SETUP.md or ANDROID-SETUP.md).
 # Whenever the phone pushes a note into ask/, it runs phone/cloud-answer.mjs: taps are applied at once (no Claude
-# usage), chat messages are answered by Claude through your own subscription (secret CLAUDE_CODE_OAUTH_TOKEN, made
+# usage), chat messages, food photos, journal reads and statements are answered by Claude through your own subscription (secret CLAUDE_CODE_OAUTH_TOKEN, made
 # with `claude setup-token`), and the result is pushed back for the phone and the PC.
 name: phone
 on:

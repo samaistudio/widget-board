@@ -85,7 +85,7 @@ Show the whole list below as numbered tick boxes, every one unticked, and ask th
 | Daily protocol | One science-based health habit fitted to their day, with tap-to-tick checks | the protocol job |
 | Display | Brightness and contrast per monitor, night light, Day / Evening / Night presets | Twinkle Tray (external monitors) or a laptop screen |
 | System | Free space per drive, RAM, CPU, antivirus status, background job status with "Run now" | nothing |
-| Phone (iPhone or Android) | Lock screen widgets (iPhone), home screen widgets, and the app: Today, Gym with body map, Tasks, Week, Chat, Due, Exams. Works with the PC off | a free GitHub account and a private data repo; Scriptable (iPhone) or Chrome (Android); chat in the cloud needs `claude setup-token` |
+| Phone (iPhone or Android) | Lock screen widgets (iPhone), home screen widgets, and the app: Today with a day line, Heads up and chat (photos, camera, barcodes), Study timer and forest, Gym with body map, Food (ring, macros, barcode scan, photo or text estimate, exercise calories), Stats, Body (weigh-ins, real burn, progress photos), Money (bank CSV, categories), Journal, Game, Everything logged, Tasks, Week, Due, Exams. Works with the PC off | a free GitHub account and a private data repo; Scriptable (iPhone) or Chrome (Android); chat, photos and the journal in the cloud need `claude setup-token` or `AI_COMMAND` |
 | Historic role models | Optional: one idea now and then from how a figure from long ago worked, inside Top performers | `role_models` in config, picked from the fixed list below |
 
 ## Step 3. Tailor every ticked feature to them
@@ -107,7 +107,43 @@ Everything must be made for this person. Never leave demo data, examples or "Ale
 - Phone: **iPhone or Android, and which model** (for example "iPhone 15 Pro Max", "Pixel 9").
   For an iPhone, match the model to a name in `phone\devices.json` (it sizes the lock screen widgets); if it is not
   listed, leave `phone.model` empty and tell them the widgets size themselves from the screen width. Ask whether the chat
-  should work while the PC is off.
+  should work while the PC is off. Then what goes in `app-config.json` (see "The phone app's settings" below): the name for the greeting, courses (none is fine), a calorie and protein goal only if they want one, currency, any meals they already paid for, their wake window and study target. Location logging stays off unless they ask for it.
+
+## The phone app's settings: app-config.json
+Everything personal in the phone app comes from one optional file in the PRIVATE data repo, `app-config.json`. The shape is
+`examples\app-config.example.json`. Every key has a default, so the app also runs with the file missing and for someone with
+no courses at all. Write only what the user told you. The chat can change it later with the action `app_cfg`, and More,
+Settings in the app shows what is set.
+
+| Key | What it does | Without it |
+|---|---|---|
+| `name` | The greeting: "Good morning, Alex" | "Good morning" |
+| `courses` | List of names or `{name, short, keywords, tree, color}`. Study chips, charts, nudges and the study AI use it by index, and everything else goes in an Other bucket. `keywords` help the app find the course in what they say. An empty list means no courses | The courses the board exports in `phone.json`, else none |
+| `term_start` | Where the lock screen ring starts counting | `term.start` in the board's config |
+| `goals` | First calorie and protein goal, `{kcal, protein}`. A goal set later in the app or the chat wins | No goal: the Food page shows what was eaten and offers to set one |
+| `currency`, `currency_after`, `locale` | The Money page: the symbol, whether it follows the number, how numbers read (`en-US` also makes CSV dates month first). Other dates stay en-GB | No symbol, en-GB |
+| `meals` | Meals already paid for (a canteen plan, for example): `{name, days: "weekdays"\|"weekends"\|"all" or a list with 0 for Sunday, from, to, kcal, protein, carbs, fat}`. Shows a Plan meal button and an "already paid for" line in Heads up while one is open | Both off |
+| `wake` | The wake window for the game, `{from, to}`. Also changeable on the Game page | 07:00 to 09:00 |
+| `game` | `study_hours_week`, `study_days` and the `weekly` targets (`moneycheck`, `contact`, `making`, `application`; 0 hides one). Ask what fits them; do not set a target they did not choose | 15 h over 5 days; 1, 2, 2, 0 |
+| `food` | How exercise raises the calorie goal: `gym_free_week`, `gym_extra_kcal`, `bonus_cap` | 3, 300, 600 |
+| `body` | `goal_kg`, or `goal_bf` with `goal_bf_low` (percent). Only if they ask for one | No goal shown |
+| `nudges` | `false` turns Heads up off | On |
+| `location` | `true` saves the place with each log. Off unless they ask for it, and explain that it goes to their private repo | Off |
+
+Other files the app and the cloud job keep in the data repo, all created when first needed: `food-log.json`, `food-ai.json`,
+`study-log.json`, `study-ai.json`, `day-log.json`, `journal.json`, `quests.json` (one-off quests, bosses with `{id, title, when,
+prep_start, prep_end, area, quests}`, game settings), `body-log.json`, `money-log.json`, `health-log.json`, `gym-phone.json`, `gym-session.json`,
+`hidden-tasks.json`, and optionally `degree.json` (`{done, total, modules}`, shown on Study only when `total` is set).
+
+## The life game's rules
+The Game page scores from the logs, on the phone. These rules are part of the feature; do not weaken them when you tailor it.
+- Six areas: Study, Body, Sleep, People, Money, Making. Points can only be added. There are no negative points, no punishment, no guilt copy and no "you missed" notifications.
+- A floor day is logging honestly and reaching one area. One tap on Rough day is a floor by itself, and that day shows one nudge at most.
+- Food scores hitting the target, never a deficit: under and over lose equally, very low logged days score Body 0, and the app never shows a lower number as progress or praises eating less. A photo read can only move an existing goal in small steps, never under 1500 kcal.
+- Under 6 hours of sleep scores Sleep 0. Rest days score (3 a week). There is no bonus past 5 training days in a row.
+- The journal scores logged or not logged only. What is said or felt is never scored. Mood is one tap and is never scored.
+- No comparison with other people, no leaderboards. Screen time is not tracked. Nothing outside the user's control is a quest, and neither is anything legal, medical or about their family or relationship.
+- Heads up says plainly what has not been logged lately and always has "I did it" or "Not now". Facts only.
 
 ## Real people: strict rule
 This project does not ship, suggest or advertise real people as a feature. Never add a living person, or anyone who died recently, to the board, its files or its text. There is no "talk to" a person or AI persona of anyone, and you never write as a real person.
@@ -156,7 +192,7 @@ Follow IPHONE-SETUP.md or ANDROID-SETUP.md. Do the PC side yourself; guide the u
 1. They need a PRIVATE repo on github.com (for example `board-data`). Create it with `gh repo create board-data --private`
    if the GitHub CLI is signed in, or ask them to create it. Never make it public.
 2. Clone it to `%USERPROFILE%\board-data`, copy `phone\cloud-answer.mjs` to `phone\cloud-answer.mjs` and
-   `phone\workflow-phone.yml` to `.github\workflows\phone.yml` there, set `TZ:` to their time zone, commit, push.
+   `phone\off.mjs` to `phone\off.mjs`, and `phone\workflow-phone.yml` to `.github\workflows\phone.yml` there, set `TZ:` to their time zone, write `app-config.json` from their answers, commit, push.
    With their OK, write a short `about-me.md` there (goals, body weight for calorie estimates, coach tone).
 3. Add `"phone": { "repo_dir": "%USERPROFILE%\\board-data", "model": "<their model>", "platform": "iphone" }` (or
    `"android"`) to `config.json`, restart the board, and after 2 to 3 minutes check that `phone.json` is in the repo.
