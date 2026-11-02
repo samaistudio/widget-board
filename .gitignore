@@ -1,0 +1,19 @@
+# everything personal stays on your PC: settings, profile, and every data file the board or its jobs write
+/*.json
+/profile.md
+/private/
+/inbox/
+/journal/
+/digests/
+/trends-history/
+/jobs/logs/
+/jobs/last-*.txt
+*.log
+*.bak
+*.lnk
+shot*.png
+.env
+/*.png
+# phone companion: your data lives in your private data repo, never in this one
+/phone/*.json
+!/phone/devices.json

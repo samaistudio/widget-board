@@ -1,0 +1,10 @@
+{
+  "holidays": [ { "from": "2027-05-24", "to": "2027-05-28" } ],
+  "weekly": [
+    { "title": "LA", "kind": "Lecture", "room": "Room 101", "first": "2027-04-12T10:00", "minutes": 90, "last": "2027-07-19" },
+    { "title": "LA", "kind": "Exercise", "room": "Room 204", "first": "2027-04-14T14:00", "minutes": 90, "last": "2027-07-21" }
+  ],
+  "events": [
+    { "title": "Career fair", "kind": "Event", "room": "Main hall", "start": "2027-05-06T11:00", "end": "2027-05-06T15:00" }
+  ]
+}

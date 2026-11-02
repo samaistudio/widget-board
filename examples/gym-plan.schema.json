@@ -1,0 +1,10 @@
+{
+  "_note": "Shape only. Claude writes your own plan during setup from your goal, days per week, equipment and experience.",
+  "name": "<plan name, e.g. 4-day upper / lower, home gym>",
+  "days": [
+    { "title": "<Day 1: ...>", "focus": "<muscles or goal of the day>",
+      "exercises": [ { "name": "<exercise>", "sets": "<e.g. 3 x 8-12>", "target": "<main muscle>" } ] },
+    { "title": "<Rest day>", "focus": "<recover>", "exercises": [ { "name": "<walk>", "sets": "<30 min>", "target": "<recovery>" } ] }
+  ],
+  "rules": [ "<warm-up rule>", "<progression rule>", "<deload or rest rule>" ]
+}

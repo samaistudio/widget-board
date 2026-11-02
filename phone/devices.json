@@ -1,0 +1,179 @@
+{
+  "note": "Lock screen sizes in points. rect = the rectangular widget. Approximate values: the widget uses the width to spread its columns and the ring, so a few points off only changes spacing. Models that are missing fall back to 40% of the screen width (Device.screenSize). Android phones are not listed: the Android app is a web page and sizes itself.",
+  "models": [
+    {
+      "name": "iPhone SE (2nd and 3rd generation)",
+      "screen_w": 375,
+      "rect_w": 153,
+      "rect_h": 69
+    },
+    {
+      "name": "iPhone 11 Pro",
+      "screen_w": 375,
+      "rect_w": 153,
+      "rect_h": 69
+    },
+    {
+      "name": "iPhone 12 mini",
+      "screen_w": 375,
+      "rect_w": 153,
+      "rect_h": 69
+    },
+    {
+      "name": "iPhone 13 mini",
+      "screen_w": 375,
+      "rect_w": 153,
+      "rect_h": 69
+    },
+    {
+      "name": "iPhone 11",
+      "screen_w": 414,
+      "rect_w": 166,
+      "rect_h": 74
+    },
+    {
+      "name": "iPhone 11 Pro Max",
+      "screen_w": 414,
+      "rect_w": 166,
+      "rect_h": 74
+    },
+    {
+      "name": "iPhone 12",
+      "screen_w": 390,
+      "rect_w": 157,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 12 Pro",
+      "screen_w": 390,
+      "rect_w": 157,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 13",
+      "screen_w": 390,
+      "rect_w": 157,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 13 Pro",
+      "screen_w": 390,
+      "rect_w": 157,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 14",
+      "screen_w": 390,
+      "rect_w": 157,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 16e",
+      "screen_w": 390,
+      "rect_w": 157,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 12 Pro Max",
+      "screen_w": 428,
+      "rect_w": 170,
+      "rect_h": 76
+    },
+    {
+      "name": "iPhone 13 Pro Max",
+      "screen_w": 428,
+      "rect_w": 170,
+      "rect_h": 76
+    },
+    {
+      "name": "iPhone 14 Plus",
+      "screen_w": 428,
+      "rect_w": 170,
+      "rect_h": 76
+    },
+    {
+      "name": "iPhone 14 Pro",
+      "screen_w": 393,
+      "rect_w": 160,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 15",
+      "screen_w": 393,
+      "rect_w": 160,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 15 Pro",
+      "screen_w": 393,
+      "rect_w": 160,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 16",
+      "screen_w": 393,
+      "rect_w": 160,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 14 Pro Max",
+      "screen_w": 430,
+      "rect_w": 172,
+      "rect_h": 76
+    },
+    {
+      "name": "iPhone 15 Plus",
+      "screen_w": 430,
+      "rect_w": 172,
+      "rect_h": 76
+    },
+    {
+      "name": "iPhone 15 Pro Max",
+      "screen_w": 430,
+      "rect_w": 172,
+      "rect_h": 76
+    },
+    {
+      "name": "iPhone 16 Plus",
+      "screen_w": 430,
+      "rect_w": 172,
+      "rect_h": 76
+    },
+    {
+      "name": "iPhone 16 Pro",
+      "screen_w": 402,
+      "rect_w": 162,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 17",
+      "screen_w": 402,
+      "rect_w": 162,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone 17 Pro",
+      "screen_w": 402,
+      "rect_w": 162,
+      "rect_h": 72
+    },
+    {
+      "name": "iPhone Air",
+      "screen_w": 420,
+      "rect_w": 168,
+      "rect_h": 76
+    },
+    {
+      "name": "iPhone 16 Pro Max",
+      "screen_w": 440,
+      "rect_w": 176,
+      "rect_h": 78
+    },
+    {
+      "name": "iPhone 17 Pro Max",
+      "screen_w": 440,
+      "rect_w": 176,
+      "rect_h": 78
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E0E12">
+<title>Widget Board</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<style>
+  html,body{margin:0;height:100%;background:#0E0E12;color:#F2F2F7;font:15px -apple-system,system-ui,Roboto,sans-serif}
+  #app{position:fixed;inset:0;width:100%;height:100%;border:0;background:#0E0E12}
+  #boot{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;z-index:2;background:#0E0E12}
+  #boot small{color:#8E8E93;max-width:340px;line-height:1.4}
+  #boot button{background:#2A2A31;color:#F2F2F7;border:0;border-radius:12px;padding:10px 16px;font:inherit}
+</style>
+</head>
+<body>
+<iframe id="app" title="Widget Board"></iframe>
+<div id="boot"><b>Widget Board</b><small id="msg">Loading your board...</small><button id="reset" hidden>Change repo or token</button></div>
+<script src="shim.js"></script>
+<script>
+// the same app as on iPhone: phone/widget.js, run through shim.js
+(async () => {
+  const msg = t => document.getElementById("msg").textContent = t
+  document.getElementById("reset").onclick = () => { for (const k of Object.keys(localStorage)) if (k.startsWith("wb.kc.")) localStorage.removeItem(k); location.reload() }
+  if ("serviceWorker" in navigator) try { await navigator.serviceWorker.register("sw.js") } catch (e) { }
+  try {
+    const code = await (await fetch("../widget.js", { cache: "no-store" })).text()
+    const S = window.ScriptableShim
+    const names = Object.keys(S)
+    const run = new (Object.getPrototypeOf(async function () { }).constructor)(...names, code)
+    await run(...names.map(n => S[n]))
+  } catch (e) {
+    msg("Could not start: " + (e && e.message || e) + ". Check your connection, then reload.")
+    document.getElementById("reset").hidden = false
+  }
+})()
+</script>
+</body>
+</html>
