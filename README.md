@@ -1,6 +1,6 @@
 # Widget Board for Windows, iPhone and Android, set up and run by your AI
 
-https://github.com/user-attachments/assets/6a82edc8-f313-45a0-b831-3f41e3532dc4
+https://github.com/user-attachments/assets/91cefa4b-3bfa-4f66-8309-bf39fc9dca5f
 
 A widget board tailored to your life. On Windows, a small pill sits at the top of your screen; click it (or drag it down)
 and a board of cards slides out. On your phone, the same day lives on the lock screen and in an app. It shows what is next today, your deadlines and exams, a gym plan with a coach, your inbox,
